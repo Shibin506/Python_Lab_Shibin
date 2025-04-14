@@ -126,30 +126,7 @@ def delete_student(email):
     students = [student for student in students if student['Email_address'] != email]
     write_csv(STUDENT_FILE, students, fieldnames=students[0].keys() if students else [])
     return jsonify({"message": "Student deleted successfully!"}), 200
-
-# Modify a student
-@app.route('/modify_student/<email>', methods=['PUT'])
-def modify_student(email):
-    data = request.json
-    students = read_csv(STUDENT_FILE)
-    for student in students:
-        if student['Email_address'] == email:
-            student.update(data)
-            break
-    write_csv(STUDENT_FILE, students, fieldnames=students[0].keys())
-    return jsonify({"message": "Student modified successfully!"}), 200
-
-# Search for a student
-@app.route('/search_student/<email>', methods=['GET'])
-def search_student(email):
-    students = read_csv(STUDENT_FILE)
-    start_time = time.time()
-    student = next((student for student in students if student['Email_address'] == email), None)
-    end_time = time.time()
-    if student:
-        return jsonify({"student": student, "time_taken": end_time - start_time}), 200
-    else:
-        return jsonify({"message": "Student not found!"}), 404
+    
 
 # Sort students by marks
 @app.route('/sort_students_by_marks', methods=['GET'])
@@ -188,35 +165,6 @@ def average_marks(course_id):
     total_marks = sum(int(student['Marks']) for student in course_students)
     average = total_marks / len(course_students)
     return jsonify({"average_marks": average}), 200
-
-# Add a new professor
-@app.route('/add_professor', methods=['POST'])
-def add_professor():
-    data = request.json
-    professors = read_csv(PROFESSOR_FILE)
-    professors.append(data)
-    write_csv(PROFESSOR_FILE, professors, fieldnames=data.keys())
-    return jsonify({"message": "Professor added successfully!"}), 201
-
-# Delete a professor
-@app.route('/delete_professor/<professor_id>', methods=['DELETE'])
-def delete_professor(professor_id):
-    professors = read_csv(PROFESSOR_FILE)
-    professors = [professor for professor in professors if professor['Professor_id'] != professor_id]
-    write_csv(PROFESSOR_FILE, professors, fieldnames=professors[0].keys() if professors else [])
-    return jsonify({"message": "Professor deleted successfully!"}), 200
-
-# Modify a professor
-@app.route('/modify_professor/<professor_id>', methods=['PUT'])
-def modify_professor(professor_id):
-    data = request.json
-    professors = read_csv(PROFESSOR_FILE)
-    for professor in professors:
-        if professor['Professor_id'] == professor_id:
-            professor.update(data)
-            break
-    write_csv(PROFESSOR_FILE, professors, fieldnames=professors[0].keys())
-    return jsonify({"message": "Professor modified successfully!"}), 200
 
 # Add a new course
 @app.route('/add_course', methods=['POST'])
